@@ -1,0 +1,236 @@
+{
+    "openapi": "3.0.2",
+    "info": {
+        "title": "竹取の翁管制システム",
+        "version": "3.0.0"
+    },
+    "servers": [
+        {
+            "url": "https://localhost:10000/v1"
+        }
+    ],
+    "paths": {
+        "/gps/{id}": {
+            "post": {
+                "summary": "GPSの起動連絡（GPSホスト用）",
+                "description": "GPSの動作開始を受け取るエンドポイント",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "GPSの管理ID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "13c067e6ae834627a1d512f0bd43ff4c"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "起動完了を登録成功"
+                    }
+                }
+            },
+            "get": {
+                "summary": "GPSの動作確認",
+                "description": "フィールドを管轄するGPSホストが全て動いているかどうかを取得する",
+                "parameters": [
+                    {
+                        "name": "field_id",
+                        "in": "path",
+                        "description": "フィールドID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "3a0f85292eb34f21a86c2e270b5c524d"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "動作状況を返す",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "hosts": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "host": {
+                                                        "description": "GPSのホストID",
+                                                        "type": "string",
+                                                        "example": "f49d7114ef284860904fd6a17f328af4"
+                                                    },
+                                                    "status": {
+                                                        "description": "動作状況",
+                                                        "type": "string",
+                                                        "example": "running"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/state/{turtle_id}": {
+            "post": {
+                "summary": "自分の状態を通知",
+                "description": "自分の現在の座標、方位、ID、残燃料を通知する",
+                "parameters": [
+                    {
+                        "name": "field_id",
+                        "in": "path",
+                        "description": "フィールドID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "8a858a3e6afd4ac0a78ed1ed58caa9ca"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "x": {
+                                        "description": "X座標",
+                                        "type": "integer",
+                                        "example": 100
+                                    },
+                                    "z": {
+                                        "description": "Z座標",
+                                        "type": "integer",
+                                        "example": 100
+                                    },
+                                    "heading": {
+                                        "description": "方位",
+                                        "type": "string",
+                                        "example": "E"
+                                    },
+                                    "fuel": {
+                                        "description": "残燃料",
+                                        "type": "integer",
+                                        "example": 2000
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "保存完了"
+                    }
+                }
+            },
+            "get": {
+                "summary": "Turtleの状態を確認（ブラウザ用）",
+                "description": "Turtleの現在の座標、方位、残燃料を取得する",
+                "parameters": [
+                    {
+                        "name": "field_id",
+                        "in": "path",
+                        "description": "フィールドID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "8a858a3e6afd4ac0a78ed1ed58caa9ca"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Turtleの現在の座標、方位、残燃料を返す"
+                    }
+                }
+            }
+        },
+        "/order/{turtle_id}": {
+            "post": {
+                "summary": "命令を仰ぐ",
+                "description": "現在の位置での動作の命令を仰ぐ",
+                "parameters": [
+                    {
+                        "name": "field_id",
+                        "in": "path",
+                        "description": "フィールドID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "8a858a3e6afd4ac0a78ed1ed58caa9ca"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "動作命令を返す",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "orders": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "order": {
+                                                        "description": "処理の実行順番",
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "exec": {
+                                                        "description": "動作命令",
+                                                        "type": "string",
+                                                        "example": "forward"
+                                                    },
+                                                    "count": {
+                                                        "description": "命令を繰り返す回数",
+                                                        "type": "integer",
+                                                        "example": 3
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "get": {
+                "summary": "現在出ている命令を取得（ブラウザ用）",
+                "description": "現在Turtleに出ている命令を取得する",
+                "parameters": [
+                    {
+                        "name": "field_id",
+                        "in": "path",
+                        "description": "フィールドID",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "8a858a3e6afd4ac0a78ed1ed58caa9ca"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "現在Turtleに出ている命令とTurtleに命令を出した時の座標を返す"
+                    }
+                }
+            }
+        }
+    }
+}
