@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace TrafficController.Controllers
 {
-    [Route("api")]
+    [Route("/api/v1")]
     [ApiController]
     public class ApiController : ControllerBase
     {
