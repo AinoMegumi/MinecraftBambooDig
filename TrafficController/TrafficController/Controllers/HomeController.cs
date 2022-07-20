@@ -4,6 +4,7 @@ using TrafficController.Models;
 
 namespace TrafficController.Controllers
 {
+    [Route("/")]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
